@@ -1,9 +1,10 @@
 import "./App.css";
+import HomePage from "./Components/HomePage";
 
 function App() {
   return (
     <>
-      <h2 className="text-2xl">Recipe Viewer</h2>
+      <HomePage />
     </>
   );
 }
