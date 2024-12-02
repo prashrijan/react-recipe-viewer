@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import RecipeCard from "./RecipeCard";
 import RecipeCardModel from "./RecipeCardModel";
+import SearchBox from "./SearchBox";
 
-const dishes = [
+let dishes = [
   {
     img: "https://www.allrecipes.com/thmb/Y7ftij8uq7sM2VpxGt-RHZg3yaA=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/11973-spaghetti-carbonara-mfs-042-21d5decdffde4a1faa94a21725ce9cc3.jpg",
     name: "Spaghetti Carbonara",
@@ -259,11 +260,33 @@ const dishes = [
 const HomePage = () => {
   const [showModal, setShowModal] = useState(false);
   const [selectedDish, setSelectedDish] = useState({});
+  const [value, setValue] = useState("");
+  let [filteredDish, setFilteredDish] = useState(dishes);
+
+  const handleSubmit = () => {
+    if (value.trim === "") {
+      setFilteredDish(dishes);
+      return;
+    }
+    const filterBySearch = dishes.filter((dish) => {
+      if (dish.name.toLowerCase().includes(value.toLowerCase())) {
+        return dish;
+      }
+    });
+
+    setFilteredDish(filterBySearch);
+  };
+
   return (
     <div className="bg-gradient-to-r from-gray-800 via-gray-900 to-black min-h-screen flex gap-7 flex-col items-center py-10">
       <h2 className="text-3xl text-white font-semibold">Recipe Viewer</h2>
+      <SearchBox
+        value={value}
+        setValue={setValue}
+        handleSubmit={handleSubmit}
+      />
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {dishes.map((dish) => {
+        {filteredDish.map((dish) => {
           return (
             <RecipeCard
               img={dish.img}
