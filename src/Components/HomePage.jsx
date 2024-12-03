@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useRef, useState } from "react";
 import RecipeCard from "./RecipeCard";
 import RecipeCardModel from "./RecipeCardModel";
 import SearchBox from "./SerachBox.jsx";
@@ -260,38 +260,32 @@ let dishes = [
 const HomePage = () => {
   const [showModal, setShowModal] = useState(false);
   const [selectedDish, setSelectedDish] = useState({});
-  const [value, setValue] = useState("");
+  let input = useRef();
   let [filteredDish, setFilteredDish] = useState(dishes);
 
   const filterDish = (dishes) =>
     dishes.filter((dish) => {
-      if (dish.name.toLowerCase().includes(value.toLowerCase())) {
+      if (dish.name.toLowerCase().includes(input.current.value.toLowerCase())) {
         return dish;
       }
     });
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (value.trim === "") {
+    if (input.current.value.trim === "") {
       setFilteredDish(dishes);
+    } else {
+      const filterBySearch = filterDish(dishes);
+
+      setFilteredDish(filterBySearch);
+      console.log(input.current.value);
     }
-    const filterBySearch = filterDish(dishes);
-
-    setFilteredDish(filterBySearch);
   };
-
-  useEffect(() => {
-    setFilteredDish(filterDish(dishes));
-  }, [value]);
 
   return (
     <div className="bg-gradient-to-r from-gray-800 via-gray-900 to-black min-h-screen flex gap-7 flex-col items-center py-10">
       <h2 className="text-3xl text-white font-semibold">Recipe Viewer</h2>
-      <SearchBox
-        value={value}
-        setValue={setValue}
-        handleSubmit={handleSubmit}
-      />
+      <SearchBox handleSubmit={handleSubmit} input={input} />
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {filteredDish.length === 0 ? (
           <div className="col-span-full flex justify-center items-center mt-24">

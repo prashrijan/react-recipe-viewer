@@ -1,6 +1,6 @@
 import React from "react";
 
-const SearchBox = ({ value, setValue, handleSubmit }) => {
+const SearchBox = ({ handleSubmit, input }) => {
   return (
     <form className="w-64 md:w-72 lg:w-80 xl:w-96" onSubmit={handleSubmit}>
       <label className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">
@@ -26,14 +26,12 @@ const SearchBox = ({ value, setValue, handleSubmit }) => {
         </div>
         <input
           type="search"
-          value={value}
+          ref={input}
           id="default-search"
           className="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
           placeholder="Search A Recipe"
           required
-          onChange={(e) => {
-            setValue(e.target.value);
-          }}
+          onChange={handleSubmit}
         />
         <button
           type="submit"
