@@ -1,7 +1,9 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import RecipeCard from "./RecipeCard";
 import RecipeCardModel from "./RecipeCardModel";
 import SearchBox from "./SerachBox.jsx";
+import FavortiesPage from "./FavortiesPage.jsx";
+import { showAlert } from "tailwind-toastify";
 
 let dishes = [
   {
@@ -260,8 +262,16 @@ let dishes = [
 const HomePage = () => {
   const [showModal, setShowModal] = useState(false);
   const [selectedDish, setSelectedDish] = useState({});
+  const [favDish, setFavDish] = useState([]);
+  const [showFavoritesPage, setShowFavoritesPage] = useState(false);
   let input = useRef();
   let [filteredDish, setFilteredDish] = useState(dishes);
+
+  let localStorage = window.localStorage;
+
+  useEffect(() => {
+    setFavDish(JSON.parse(localStorage.getItem("favoriteDish")) || []);
+  }, []);
 
   const filterDish = (dishes) =>
     dishes.filter((dish) => {
@@ -278,43 +288,122 @@ const HomePage = () => {
       const filterBySearch = filterDish(dishes);
 
       setFilteredDish(filterBySearch);
-      console.log(input.current.value);
     }
   };
 
-  return (
-    <div className="bg-gradient-to-r from-gray-800 via-gray-900 to-black min-h-screen flex gap-7 flex-col items-center py-10">
-      <h2 className="text-3xl text-white font-semibold">Recipe Viewer</h2>
-      <SearchBox handleSubmit={handleSubmit} input={input} />
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {filteredDish.length === 0 ? (
-          <div className="col-span-full flex justify-center items-center mt-24">
-            <h2 className="text-white text-xl font-semibold ms-2">
-              No Dish Found.
-            </h2>
-          </div>
-        ) : (
-          filteredDish.map((dish) => {
-            return (
-              <RecipeCard
-                img={dish.img}
-                name={dish.name}
-                recipe={dish.recipe}
-                ingredients={dish.ingredients}
-                setShowModal={setShowModal}
-                setSelectedDish={setSelectedDish}
-              />
-            );
-          })
-        )}
-      </div>
+  const setLocalStorage = (clickedDish) => {
+    if (favDish.find((dish) => dish.name === clickedDish.name)) return;
+    let temp = [...favDish];
+    temp.push(clickedDish);
+    setFavDish(temp);
+    localStorage.setItem("favoriteDish", JSON.stringify(temp));
+  };
 
-      {showModal ? (
-        <RecipeCardModel data={selectedDish} setShowModal={setShowModal} />
+  const removeFromLocalStorage = (clickedDish) => {
+    const newFavDish = favDish.filter((dish) => dish.name !== clickedDish.name);
+    let temp = [...newFavDish];
+    setFavDish(temp);
+    localStorage.setItem("favoriteDish", JSON.stringify(temp));
+  };
+
+  return (
+    <>
+      <nav className="bg-white border-gray-200 dark:bg-gray-900">
+        <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
+          <span className="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">
+            Recipe Viewer
+          </span>
+          <button
+            data-collapse-toggle="navbar-default"
+            type="button"
+            className="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
+            aria-controls="navbar-default"
+            aria-expanded="false"
+          >
+            <span className="sr-only">Open main menu</span>
+            <svg
+              className="w-5 h-5"
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 17 14"
+            >
+              <path
+                stroke="currentColor"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M1 1h15M1 7h15M1 13h15"
+              />
+            </svg>
+          </button>
+          <div className="hidden w-full md:block md:w-auto" id="navbar-default">
+            <ul className="font-medium flex flex-col p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
+              <li>
+                <p
+                  className="block cursor-pointer text-xl py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
+                  onClick={() => {
+                    if (!showFavoritesPage) {
+                      setShowFavoritesPage(true);
+                    } else {
+                      setShowFavoritesPage(false);
+                    }
+                  }}
+                >
+                  {!showFavoritesPage ? "Favorites" : "Home"}
+                </p>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+
+      {!showFavoritesPage ? (
+        <div className="bg-gradient-to-r from-gray-800 via-gray-900 to-black min-h-screen flex gap-7 flex-col items-center py-10">
+          <SearchBox handleSubmit={handleSubmit} input={input} />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {filteredDish.length === 0 ? (
+              <div className="col-span-full flex justify-center items-center mt-24">
+                <h2 className="text-white text-xl font-semibold ms-2">
+                  No Dish Found.
+                </h2>
+              </div>
+            ) : (
+              filteredDish.map((dish) => {
+                return (
+                  <RecipeCard
+                    buttonText="Add To Favorites"
+                    img={dish.img}
+                    name={dish.name}
+                    recipe={dish.recipe}
+                    ingredients={dish.ingredients}
+                    setShowModal={setShowModal}
+                    setSelectedDish={setSelectedDish}
+                    setLocalStorage={setLocalStorage}
+                  />
+                );
+              })
+            )}
+          </div>
+
+          {showModal ? (
+            <RecipeCardModel data={selectedDish} setShowModal={setShowModal} />
+          ) : (
+            ""
+          )}
+        </div>
       ) : (
-        ""
+        <FavortiesPage
+          favDish={favDish}
+          showModal={showModal}
+          setShowModal={setShowModal}
+          setSelectedDish={setSelectedDish}
+          setLocalStorage={setLocalStorage}
+          selectedDish={selectedDish}
+          removeFromLocalStorage={removeFromLocalStorage}
+        />
       )}
-    </div>
+    </>
   );
 };
 
