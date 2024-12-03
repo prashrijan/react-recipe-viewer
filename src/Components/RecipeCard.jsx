@@ -14,12 +14,22 @@ const RecipeCard = ({
 }) => {
   const addToaster = () => {
     toast.success("Recipe added to favorites.");
-    console.log("Added");
+    console.log("added");
   };
 
   const removeToaster = () => {
     toast.error("Recipe removed from favorites");
     console.log("removed");
+  };
+
+  const handleButtonOnClick = () => {
+    if (buttonText === "Add To Favorites") {
+      setLocalStorage({ img, name, recipe, ingredients });
+      addToaster();
+    } else if (buttonText === "Remove From Favorites") {
+      removeFromLocalStorage({ img, name, recipe, ingredients });
+      removeToaster();
+    }
   };
   return (
     <div className="w-80 bg-white shadow-md rounded-lg overflow-hidden">
@@ -48,15 +58,7 @@ const RecipeCard = ({
           </button>
           <button
             className="mt-4 w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded transition truncate"
-            onClick={() => {
-              if (buttonText === "Add To Favorites") {
-                setLocalStorage({ img, name, recipe, ingredients });
-                addToaster();
-              } else {
-                removeFromLocalStorage({ img, name, recipe, ingredients });
-                removeToaster();
-              }
-            }}
+            onClick={handleButtonOnClick}
           >
             {buttonText}
           </button>

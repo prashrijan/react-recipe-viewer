@@ -4,6 +4,7 @@ import RecipeCardModel from "./RecipeCardModel";
 import SearchBox from "./SerachBox.jsx";
 import FavortiesPage from "./FavortiesPage.jsx";
 
+// Dishes Array
 let dishes = [
   {
     img: "https://www.allrecipes.com/thmb/Y7ftij8uq7sM2VpxGt-RHZg3yaA=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/11973-spaghetti-carbonara-mfs-042-21d5decdffde4a1faa94a21725ce9cc3.jpg",
@@ -259,6 +260,7 @@ let dishes = [
 ];
 
 const HomePage = () => {
+  // States
   const [showModal, setShowModal] = useState(false);
   const [selectedDish, setSelectedDish] = useState({});
   const [favDish, setFavDish] = useState([]);
@@ -266,12 +268,14 @@ const HomePage = () => {
   let input = useRef();
   let [filteredDish, setFilteredDish] = useState(dishes);
 
+  // localstorage
   let localStorage = window.localStorage;
 
   useEffect(() => {
     setFavDish(JSON.parse(localStorage.getItem("favoriteDish")) || []);
   }, []);
 
+  // filters the dishes
   const filterDish = (dishes) =>
     dishes.filter((dish) => {
       if (dish.name.toLowerCase().includes(input.current.value.toLowerCase())) {
@@ -279,6 +283,7 @@ const HomePage = () => {
       }
     });
 
+  // handles the form submission
   const handleSubmit = (e) => {
     e.preventDefault();
     if (input.current.value.trim === "") {
@@ -290,6 +295,7 @@ const HomePage = () => {
     }
   };
 
+  // updates localstorage
   const setLocalStorage = (clickedDish) => {
     if (favDish.find((dish) => dish.name === clickedDish.name)) return;
     let temp = [...favDish];
@@ -298,6 +304,7 @@ const HomePage = () => {
     localStorage.setItem("favoriteDish", JSON.stringify(temp));
   };
 
+  // removes from local storage
   const removeFromLocalStorage = (clickedDish) => {
     const newFavDish = favDish.filter((dish) => dish.name !== clickedDish.name);
     let temp = [...newFavDish];
@@ -344,9 +351,10 @@ const HomePage = () => {
                 </h2>
               </div>
             ) : (
-              filteredDish.map((dish) => {
+              filteredDish.map((dish, index) => {
                 return (
                   <RecipeCard
+                    key={index}
                     buttonText="Add To Favorites"
                     img={dish.img}
                     name={dish.name}

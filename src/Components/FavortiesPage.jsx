@@ -21,9 +21,10 @@ const FavortiesPage = ({
             </h2>
           </div>
         ) : (
-          favDish.map((dish) => {
+          favDish.map((dish, index) => {
             return (
               <RecipeCard
+                key={index}
                 buttonText="Remove From Favorites"
                 img={dish.img}
                 name={dish.name}

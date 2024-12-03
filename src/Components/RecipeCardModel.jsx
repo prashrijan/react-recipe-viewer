@@ -1,7 +1,6 @@
 import React from "react";
 
 const RecipeCardModel = ({ data, setShowModal }) => {
-  console.log(data);
   const { img, ingredients, name, recipe } = data;
   return (
     <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50">
@@ -26,8 +25,8 @@ const RecipeCardModel = ({ data, setShowModal }) => {
             Ingredients:
           </h3>
           <ul className="list-disc pl-5 text-gray-700 mb-4">
-            {ingredients.map((item) => {
-              return <li>{item}</li>;
+            {ingredients.map((item, index) => {
+              return <li key={index}>{item}</li>;
             })}
           </ul>
           <h3 className="text-lg font-semibold text-gray-600 mb-2">Recipe:</h3>
