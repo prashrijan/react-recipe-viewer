@@ -1,4 +1,5 @@
 import React from "react";
+import toast, { Toaster } from "react-hot-toast";
 
 const RecipeCard = ({
   img,
@@ -11,6 +12,15 @@ const RecipeCard = ({
   buttonText,
   removeFromLocalStorage,
 }) => {
+  const addToaster = () => {
+    toast.success("Recipe added to favorites.");
+    console.log("Added");
+  };
+
+  const removeToaster = () => {
+    toast.error("Recipe removed from favorites");
+    console.log("removed");
+  };
   return (
     <div className="w-80 bg-white shadow-md rounded-lg overflow-hidden">
       <img
@@ -41,15 +51,16 @@ const RecipeCard = ({
             onClick={() => {
               if (buttonText === "Add To Favorites") {
                 setLocalStorage({ img, name, recipe, ingredients });
-                alert("Recipe Added In Favorites.");
+                addToaster();
               } else {
                 removeFromLocalStorage({ img, name, recipe, ingredients });
-                alert("Recipe Removed from Favorites.");
+                removeToaster();
               }
             }}
           >
             {buttonText}
           </button>
+          <Toaster />
         </div>
       </div>
     </div>
